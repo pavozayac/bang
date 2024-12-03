@@ -21,11 +21,9 @@ find_package(pybind11 CONFIG REQUIRED)
 
 # Add a library using FindPython's tooling (pybind11 also provides a helper like
 # this)
-python_add_library(_core MODULE src/ffi/main.cpp WITH_SOABI)
-target_link_libraries(_core PRIVATE pybind11::headers)
 
-python_add_library(_gpu_stable MODULE src/ffi/GPU_stable.cu WITH_SOABI)
-add_library(German STATIC src/ffi/shared/German.cc)
+python_add_library(_gpu_stable MODULE src/bang/ffi/GPU_stable.cu WITH_SOABI)
+add_library(German STATIC src/bang/ffi/shared/German.cc)
 
 target_compile_options(German INTERFACE
   "SHELL:-gencode=arch=compute_35,code=sm_35"
@@ -45,14 +43,14 @@ target_compile_options(_gpu_stable INTERFACE
   "SHELL:-gencode=arch=compute_75,code=compute_75"
 )
 
-target_include_directories(_gpu_stable PUBLIC src/ffi/shared)
+target_include_directories(_gpu_stable PUBLIC src/bang/ffi/shared)
 target_link_libraries(_gpu_stable PRIVATE pybind11::headers CUDA::curand German)
 
 
 
 # This is passing in the version as a define just as an example
-target_compile_definitions(_core PRIVATE VERSION_INFO=${PROJECT_VERSION})
+# target_compile_definitions(_core PRIVATE VERSION_INFO=${PROJECT_VERSION})
 
 # The install directory is the output (wheel) directory
-install(TARGETS _core _gpu_stable DESTINATION bang)
-# install(TARGETS _gpu_stable DESTINATION bang)
+# install(TARGETS _core _gpu_stable DESTINATION bang)
+install(TARGETS _gpu_stable DESTINATION bang)
